@@ -1,0 +1,91 @@
+hotlib 0.1
+a hooking library
+by x8esix
+
+Background:
+
+Microsoft Detours has a shitty EULA and is commercial. That is all.
+
+Notes:
+
+To use, include hotlib_public.h in your project and link to hotlib.lib.
+
+Pointers passed do not have to have read/write access to data at that time, but must be able to gain permission via VirtualProtect(). If a separate page protection modification is to be used, do so before calling a function.
+
+XML documentation can be found above each function in hotlib_public.h.
+
+All structs are aligned on single-byte boundaries.
+
+This header is meant for MSVC 2010, and may not link correctly if used with other compilers/linkers.
+
+Function namespace prefix "hl" is used.
+
+Todo:
+
+(in order of priorities): 
+    [ ] Implement IAT/EAT hooking
+    [ ] Implement DrX hooking
+    [ ] Implement disassembly-based hooking
+    [ ] Implement x64 support
+
+Changelist:
+
+    0.1: Initial release, only hotpatching is supported
+
+        __________________________________________________________________________
+
+Glossary:
+
+Bypass		- Pointer to a location that bypasses the hook
+Detour		- Location that the hook will redirect function calls to
+Hotpatch	- Microsoft-coined term to refer to a 7-nop sled at the beginning of each 			   "hotpatchable" function to allow for quick fixes that developers may have. 			  Since Windows NT, all exported functions are hotpatchable.
+Trampoline	- Hook that uses control redirection
+
+Structs:
+
+Trampoline:
+Holds information about a hotpatched function.
+
+struct _TRAMPOLINE_T32 {
+            void    *pFunction,
+                    *pBypass,
+                    *pDetour;
+            BYTE    OriginalPre[7];
+            BYTE    bEnabled;
+};
+
+        __________________________________________________________________________
+
+Checking if a feature is available:
+
+hlIsFeatureAvailable:
+
+	int STDCALL hlIsFeatureCompatible(IN HOTLIB_FEATURE hlFeature);
+
+Checks if a feature is available. Returns 1 if available and 0 if unavailable. 
+v0.1:
+	HOTPATCH
+
+Setting a hook:
+
+hlSetHotPatch32:
+
+	void* STDCALL hlSetHotPatch32(
+				IN const PTR32 Function,
+				IN const PTR32 Detour,
+				OUT TRAMPOLINE_T* Trampoline);
+
+Sets a hotpatch at Function that will bounce to Detour before executing, and returns the relevant information in the Trampoline structure. Memory does not need to already have read/write access, and any original hotpatches will be saved in the Trampoline structure.
+
+On success, a pointer to the bypass is returned. If NULL is returned, there was a problem either writing to the page or applying the proper protection.
+
+Removing a hook:
+
+hlRemoveHotPatch32:
+
+	void* STDCALL hlRemoveHotPatch32(
+				INOUT TRAMPOLINE_T* Trampoline);
+
+Removes a hotpatch at Trampoline->pFunction and restores the original hotpatch [if any] that were there before the hotpatch was applied. Memory does not need to have read/write access. 
+
+On success, the Trampoline struct will be zeroed and a pointer to the original function is returned. If NULL is returned, there was a problem either writing to the page or applying the proper protection. 
