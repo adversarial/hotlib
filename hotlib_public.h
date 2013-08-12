@@ -1,9 +1,24 @@
+/*
+ * (C) Copyright 2013 x8esix.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 3.0 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-3.0.txt
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ */
+
 #pragma once
 
 // public header for hotlib 0.1
 // hotlib is an opensource, mid level wrapper for hooking functions.
 // currently, only hotpatching is supported.
-// released under VxLicense (see LICENSE)
+// released under LGPL3.0
 // by x8esix
 
 // Usage: include "hotlib_public.h" in project and link to hotlib.lib

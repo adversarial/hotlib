@@ -13,18 +13,11 @@
  *
  */
 
+#pragma once
+
 #include "hotlib.h"
 
-/// <summary>
-/// Checks if feature is available </summary>
-/// 
-/// <returns>
-/// Returns 1 if available, 0 if unavailabe </returns>
-int STDCALL hlIsFeatureCompatible(IN HOTLIB_FEATURE hlFeature) {
-	switch(hlFeature) {
-		case HOTPATCH:
-			return 1;
-		default:
-			return 0;
-	}
-}
+#pragma region Prototypes
+	void* STDCALL EXPORT hlSetHotPatch32(IN const PTR Function, IN const PTR Detour, OUT TRAMPOLINE_T* Trampoline);
+	void* STDCALL EXPORT hlRemoveHotPatch32(INOUT TRAMPOLINE_T* Trampoline);
+#pragma endregion
