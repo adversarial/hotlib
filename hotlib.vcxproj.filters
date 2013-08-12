@@ -22,9 +22,15 @@
     <ClInclude Include="build_op.h">
       <Filter>hotlib</Filter>
     </ClInclude>
+    <ClInclude Include="hotpatch.h">
+      <Filter>hotlib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hotlib.c">
+      <Filter>hotlib</Filter>
+    </ClCompile>
+    <ClCompile Include="hotpatch.c">
       <Filter>hotlib</Filter>
     </ClCompile>
   </ItemGroup>

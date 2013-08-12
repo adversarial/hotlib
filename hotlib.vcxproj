@@ -14,10 +14,12 @@
     <ClInclude Include="build_op.h" />
     <ClInclude Include="hotlib.h" />
     <ClInclude Include="hotlib_public.h" />
+    <ClInclude Include="hotpatch.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hotlib.c" />
+    <ClCompile Include="hotpatch.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C2A28EEF-CE48-4247-93C5-34025F048F05}</ProjectGuid>
