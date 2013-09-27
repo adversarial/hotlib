@@ -22,7 +22,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-//#pragma comment(lib, "PEel")			// required for IAT and EAT hooks (not supported in 0.1)
+#include "..\peel\doc\PEel_public.h"
+#pragma comment(lib, "PEel")			// required for IAT and EAT hooks
 
 #pragma region Constants
     static const BYTE PrefixPatch[] = {
@@ -31,11 +32,17 @@
 
     static const BYTE OpcodeJmp = 0xe9;	// jmp rel32
 
-	#define JMPREL32SIZE	5			// e9 xx xx xx xx
-	#define JMPREL8SIZE		2			// eb xx
-    #define HOTPATCHSIZE    JMPREL32SIZE + JMPREL8SIZE
+#   define JMPREL32SIZE	    5			// e9 xx xx xx xx
+#   define JMPREL64SIZE     9           // e9 xx xx xx xx xx xx xx xx
+#   define JMPREL8SIZE		2			// eb xx
 
-    #define NAKEDCALLPROLOG 0			// full retard
+#   ifdef _M_IX86
+#       define HOTPATCHSIZE    JMPREL32SIZE + JMPREL8SIZE
+#   else
+#       define HOTPATCHSIZE    JMPREL64SIZE + JMPREL8SIZE
+#   endif
+
+#   define NAKEDCALLPROLOG 0			// full retard
 
 	const static char tzVersion[] = "hotlib \x03 \x03 by x8esix";
 #pragma endregion
@@ -47,13 +54,22 @@
             void    *pFunction,			// tsk tsk
                     *pBypass,			// call function around hook
                     *pDetour;			// your hook
-            BYTE    OriginalPre[HOTPATCHSIZE];	// play nice with other people who hook
-            BYTE    bEnabled;			// not used currently (just T/F for outside, don't you use returns!?!)
-        } TRAMPOLINE_T;
+            BYTE     bEnabled;			// not used currently (just T/F for outside, don't you use returns!?!)
+            BYTE     OriginalPre[HOTPATCHSIZE];	// play nice with other people who hook
+        } TRAMPOLINE32_T;
+
+        typedef struct {
+            void    *IatEntry,          // IAT item ptr
+                    *pBypass,           // original function ptr
+                    *pDetour;           // your hook
+            BYTE     bEnabled;
+        } HOOK32_T;
     #pragma pack(pop)
 
 	typedef enum HOTLIB_FEATURE { 
-		HOTPATCH
+		HOTPATCH,
+        IATHOOK,
+        EATHOOK
 	} HOTLIB_FEATURE;
 #pragma endregion
 
@@ -71,3 +87,4 @@
 #define MSVCFUNCTIONADDR(trampoline) ((*(PTR*)((PTR)trampoline + 1)) + (PTR)trampoline + PROLOG)
 
 #include "hotpatch.h"
+#include "iathook.h"

@@ -29,9 +29,10 @@
 /// Returns address of bypass for hooked function (Trampoline->pBypass), NULL on error </returns>
 void* STDCALL EXPORT hlSetHotPatch32(IN const PTR Function,
 							IN const PTR Detour,
-							OUT TRAMPOLINE_T* Trampoline) {
-    PTR    pDelta,
-                pHotPatch;
+							OUT TRAMPOLINE32_T* Trampoline) {
+    PTR         pDelta,
+                pHotPatch,
+                pInstr;
     DWORD        dwProt;
 
 	if (Trampoline->bEnabled)
@@ -39,24 +40,26 @@ void* STDCALL EXPORT hlSetHotPatch32(IN const PTR Function,
     Trampoline->pFunction = (void*)Function;
     Trampoline->pDetour = (void*)Detour;
     pHotPatch = (PTR)Trampoline->pFunction - 5;
+    pInstr = pHotPatch;
     pDelta = (PTR)Trampoline->pDetour - pHotPatch - 5;    // dest - source - sizeof(jmp rel32)
-    if(!VirtualProtect((LPVOID)pHotPatch, HOTPATCHSIZE, PAGE_EXECUTE_READWRITE, &dwProt))
+    if(!VirtualProtect((LPVOID)pHotPatch, 7, PAGE_EXECUTE_READWRITE, &dwProt))
             return NULL;
-  #if BUILD_OP_USE_SEH
+#  if BUILD_OP_USE_SEH
     __try {
-  #endif
-        CopyMemory(Trampoline->OriginalPre, (const void*)pHotPatch, HOTPATCHSIZE);
+#  endif
+        CopyMemory(Trampoline->OriginalPre, (const void*)pHotPatch, 7);
         *(BYTE*)pHotPatch++ = OpcodeJmp;            // jmp
-        *(PTR*)pHotPatch = pDelta;           //     rel32
+        *(PTR*)pHotPatch = pDelta;                  //     rel32
         pHotPatch += sizeof(PTR);
         *(WORD*)pHotPatch = *(WORD*)PrefixPatch;    // jmp -5
-  #if BUILD_OP_USE_SEH
+#  if BUILD_OP_USE_SEH
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         return NULL;
     }
-  #endif
-    if(!VirtualProtect((LPVOID)((PTR)pHotPatch - 5), HOTPATCHSIZE, dwProt, &dwProt))
+#  endif
+    if(!VirtualProtect((LPVOID)((PTR)pHotPatch - 5), 7, dwProt, &dwProt))
             return NULL;
+    FlushInstructionCache(GetCurrentProcess(), (void*)pInstr, 7); // not necessary on x86 but whatever
     Trampoline->pBypass = (void*)((PTR)pHotPatch + sizeof(WORD));
     Trampoline->bEnabled = TRUE;
     return Trampoline->pBypass;
@@ -70,26 +73,29 @@ void* STDCALL EXPORT hlSetHotPatch32(IN const PTR Function,
 /// 
 /// <returns>
 /// Returns address of function that was hotpatched, NULL on error </returns>
-void* STDCALL EXPORT hlRemoveHotPatch32(INOUT TRAMPOLINE_T* Trampoline) {
-    PTR    pHotPatch;
+void* STDCALL EXPORT hlRemoveHotPatch32(INOUT TRAMPOLINE32_T* Trampoline) {
+    PTR    pHotPatch,
+           pInstr;
     DWORD        dwProt;
 
 	if (!Trampoline->bEnabled)
 		return FALSE;
     pHotPatch = (PTR)Trampoline->pFunction - 5;
+    pInstr = pHotPatch;
     if(!VirtualProtect((LPVOID)pHotPatch, 7, PAGE_EXECUTE_READWRITE, &dwProt))
             return NULL;
-  #if BUILD_OP_USE_SEH
+#  if BUILD_OP_USE_SEH
     __try {
-  #endif
-        memcpy((void*)pHotPatch, Trampoline->OriginalPre, HOTPATCHSIZE);
-  #if BUILD_OP_USE_SEH
+#  endif
+        memcpy((void*)pHotPatch, Trampoline->OriginalPre, 7);
+#  if BUILD_OP_USE_SEH
 	} __except(EXCEPTION_EXECUTE_HANDLER) {
         return NULL;
     }
-  #endif
-    if(!VirtualProtect((LPVOID)((PTR)pHotPatch), HOTPATCHSIZE, dwProt, &dwProt))
+#  endif
+    if(!VirtualProtect((LPVOID)((PTR)pHotPatch), 7, dwProt, &dwProt))
             return NULL;
-    memset(Trampoline, 0, sizeof(TRAMPOLINE_T));
+    FlushInstructionCache(GetCurrentProcess(), (void*)pInstr, 7); // not necessary on x86 but whatever
+    memset(Trampoline, 0, sizeof(TRAMPOLINE32_T));
     return (void*)((PTR)pHotPatch + 5);
 }
