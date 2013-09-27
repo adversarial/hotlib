@@ -23,6 +23,7 @@
 int STDCALL hlIsFeatureCompatible(IN HOTLIB_FEATURE hlFeature) {
 	switch(hlFeature) {
 		case HOTPATCH:
+        case IATHOOK:
 			return 1;
 		default:
 			return 0;

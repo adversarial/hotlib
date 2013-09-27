@@ -8,22 +8,31 @@
     <Filter Include="hotlib\Headers">
       <UniqueIdentifier>{32d46915-666f-461b-931a-f8cb8b61f218}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hotlib\hotpatch">
+      <UniqueIdentifier>{bea7c144-a65e-4610-ab8c-74e78cd42cd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hotlib\IATHook">
+      <UniqueIdentifier>{a677dd79-70af-4e34-9922-17e320683e5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hotlib.h">
-      <Filter>hotlib</Filter>
-    </ClInclude>
     <ClInclude Include="hotlib_public.h">
       <Filter>hotlib\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="types.h">
-      <Filter>hotlib</Filter>
     </ClInclude>
     <ClInclude Include="build_op.h">
       <Filter>hotlib</Filter>
     </ClInclude>
-    <ClInclude Include="hotpatch.h">
+    <ClInclude Include="hotlib.h">
       <Filter>hotlib</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>hotlib</Filter>
+    </ClInclude>
+    <ClInclude Include="hotpatch.h">
+      <Filter>hotlib\hotpatch</Filter>
+    </ClInclude>
+    <ClInclude Include="iathook.h">
+      <Filter>hotlib\IATHook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -31,7 +40,10 @@
       <Filter>hotlib</Filter>
     </ClCompile>
     <ClCompile Include="hotpatch.c">
-      <Filter>hotlib</Filter>
+      <Filter>hotlib\hotpatch</Filter>
+    </ClCompile>
+    <ClCompile Include="iathook.c">
+      <Filter>hotlib\IATHook</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

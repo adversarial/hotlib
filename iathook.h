@@ -18,6 +18,6 @@
 #include "hotlib.h"
 
 #pragma region Prototypes
-	void* STDCALL EXPORT hlSetHotPatch32(IN const PTR Function, IN const PTR Detour, OUT TRAMPOLINE32_T* Trampoline);
-	void* STDCALL EXPORT hlRemoveHotPatch32(INOUT TRAMPOLINE32_T* Trampoline);
+	void* STDCALL EXPORT hlSetIATHook32(IN const void* pModule, IN const char* pszLibraryName, IN const char* pszFunctionName, IN const PTR Detour, OUT HOOK32_T* Trampoline);
+	void* STDCALL EXPORT hlRemoveIATHook32(INOUT HOOK32_T* Hook);
 #pragma endregion
