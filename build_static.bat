@@ -16,6 +16,7 @@ set objects=
      ECHO.
 
      FOR %%i in (*.o) DO (call :concat %%i & ECHO Adding %%i to library)
+     call :concat PEel32.lib
 
      ar rcs .\Release\hotlib.lib %objects%
 
