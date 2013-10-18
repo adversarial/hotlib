@@ -9,7 +9,7 @@ set objects=
      FOR %%i in (*.o) DO del %%i
      IF EXIST .\Release\hotlib.lib del .\Release\hotlib.lib /Q
 
-     FOR %%i in (*.c) DO (gcc -c %%i -std=c99 -Os -s -pedantic & ECHO Compiling %%i)
+     FOR %%i in (*.c) DO (gcc -c %%i -std=c99 -Os -s & ECHO Compiling %%i)
  
      ECHO.
      ECHO Linking library...

@@ -32,21 +32,21 @@
 /// <returns>
 /// Returns address of bypass for hooked function (Trampoline->pBypass), NULL on error </returns>
 void* STDCALL EXPORT hlSetIATHook32(IN const void* pModule, IN const char* pszLibraryName, IN const char* pszFunctionName, IN const PTR Detour, OUT HOOK32_T* Hook) {
-    VIRTUAL_MODULE32  vm = {0};
-    IMPORT_LIBRARY32* pIL = NULL;
-    IMPORT_ITEM32*    pII = NULL;
+    VIRTUAL_MODULE  vm = {0};
+    IMPORT_LIBRARY* pIL = NULL;
+    IMPORT_ITEM*    pII = NULL;
 
     DWORD dwProtect = 0;
 
-    if (!LOGICAL_SUCCESS(PlAttachImage32(pModule, &vm)))
+    if (!LOGICAL_SUCCESS(PlAttachImage(pModule, &vm)))
         return NULL;
-    PlEnumerateImports32(&vm.PE);
-    for (pIL = vm.PE.pImport; pIL != NULL; pIL = (IMPORT_LIBRARY32*)pIL->Flink) {
+    PlEnumerateImports(&vm.PE);
+    for (pIL = vm.PE.pImport; pIL != NULL; pIL = (IMPORT_LIBRARY*)pIL->Flink) {
         if (!strcmp(pIL->Library, pszLibraryName)) {
-            for (pII = pIL->iiImportList; pII != NULL; pII = (IMPORT_ITEM32*)pII->Flink) {
+            for (pII = pIL->iiImportList; pII != NULL; pII = (IMPORT_ITEM*)pII->Flink) {
                 if ((PTR32)pszFunctionName & IMAGE_ORDINAL_FLAG32 ? pII->Ordinal == pszFunctionName : !strcmp(pszFunctionName, pII->Name)) {
                     if(!VirtualProtect(pII->dwItemPtr, sizeof(PTR32), PAGE_READWRITE, &dwProtect)) {
-                        PlFreeEnumeratedImports32(&vm.PE);
+                        PlFreeEnumeratedImports(&vm.PE);
                         return NULL;
                     }
 #                 if BUILD_OP_USE_SEH
@@ -62,14 +62,14 @@ void* STDCALL EXPORT hlSetIATHook32(IN const void* pModule, IN const char* pszLi
                     }
 #                 endif
                         VirtualProtect(pII->dwItemPtr, sizeof(PTR32), dwProtect, &dwProtect);
-                        PlFreeEnumeratedImports32(&vm.PE);
+                        PlFreeEnumeratedImports(&vm.PE);
                         Hook->bEnabled = TRUE;
                         return Hook->pBypass;
                 }
             }
         }
     }
-    PlFreeEnumeratedImports32(&vm.PE);
+    PlFreeEnumeratedImports(&vm.PE);
     return NULL;
 }
 
