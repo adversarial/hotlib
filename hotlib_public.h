@@ -55,17 +55,24 @@
 
 #   define STDCALL __stdcall
 
-#   pragma pack(push)
-#   pragma pack (1)
-        struct _TRAMPOLINE_T32 {
-            void    *pFunction,			// pointer to function
+#   pragma pack (push, 1)
+
+        typedef struct {
+            void    *pFunction,			// tsk tsk
                     *pBypass,			// call function around hook
-                    *pDetour;			// your detour
-            BYTE    OriginalPre[HOTPATCHSIZE];		// play nice with other people who hook
-            BYTE    bEnabled;			// member functions will check this
-        };
+                    *pDetour;			// your hook
+            BYTE     bEnabled;			// not used currently (just T/F for outside, don't you use returns!?!)
+            BYTE     OriginalPre[HOTPATCHSIZE];	// play nice with other people who hook
+        } TRAMPOLINE32_T;
+
+        typedef struct {
+            void    *IatEntry,          // IAT item ptr
+                    *pBypass,           // original function ptr
+                    *pDetour;           // your hook
+            BYTE     bEnabled;
+        } HOOK32_T;
+
 #   pragma pack(pop)
-	typedef _TRAMPOLINE_T32 TRAMPOLINE_T;
 
 	enum HOTLIB_FEATURE { 
 		HOTPATCH,
