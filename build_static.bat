@@ -5,6 +5,7 @@
 
 set objects=
 
+cd .\hotlib\
 :: cleanup     
      FOR %%i in (*.o) DO del %%i
      IF EXIST .\Release\hotlib.lib del .\Release\hotlib.lib /Q
@@ -16,9 +17,9 @@ set objects=
      ECHO.
 
      FOR %%i in (*.o) DO (call :concat %%i & ECHO Adding %%i to library)
-     call :concat PEel32.lib
+     call :concat .\PEel32.lib
 
-     ar rcs .\Release\hotlib.lib %objects%
+     ar rcs ..\Release\hotlib.lib %objects%
 
 ECHO.
 ECHO Cleaning up...
